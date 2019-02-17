@@ -20,7 +20,7 @@ var Web3 = require("web3");
 // swagger options
 const swaggerOptions = {
   info: {
-    title: 'VNM API Documentation',
+    title: 'SMART TOKEN API Documentation',
     version: "1",
   },
 };
@@ -74,7 +74,7 @@ server.route([
     method: "GET",
     path: "/totalSupply",
     options: {
-      description: 'Gets total supply of VNM tokens',
+      description: 'Gets total supply of tokens',
       notes: 'returns a string',
       tags: ['api'],
       handler: async (request, h) => {
@@ -137,7 +137,7 @@ server.route([
     method: "POST",
     path: "/transfer/{from}/{to}/{amount}/{privateKey}",
     options: {
-      description: 'Transfer VNM tokens from one address to another',
+      description: 'Transfer tokens from one address to another',
       notes: 'validation should be done on the front end',
       tags: ['api'],
       validate: {
@@ -195,7 +195,7 @@ server.route([
           let result = await web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
           console.log('Transaction result:')
           console.log(result)
-          return `Transaction successful: ${params.from} sent ${request.params.amount}VNM to ${params.to}`
+          return `Transaction successful: ${params.from} sent ${request.params.amount} to ${params.to}`
 
         } catch (err) {
           console.log(err);
