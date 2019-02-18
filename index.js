@@ -196,11 +196,12 @@ server.route([
           // let result = await web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
           // console.log('Transaction result:')
           // console.log(result)
-          console.log(rawTransaction.nonce)
+          console.log(rawTransaction)
           return `Transaction successful: ${params.from} sent ${request.params.amount} to ${params.to}`
 
         } catch (err) {
           console.log(err);
+          return err;
         }
       }
     }
