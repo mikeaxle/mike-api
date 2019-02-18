@@ -202,22 +202,19 @@ server.route([
 
           // Send the serialized signed transaction to the Ethereum network.
           // TODO: replace timeout with messaging queue
-          setTimeout(() => {
-            return web3.eth
-              .sendSignedTransaction(
-                "0x" + serializedTransaction.toString("hex")
-              )
-              .then(result => {
-                console.log("Transaction result:");
-                console.log(result);
-                return `Transaction successful: ${params.from} sent ${
-                  request.params.amount
-                } to ${params.to}`;
-              })
-              .catch(err => {
-                console.log(err);
-              });
-          }, 30000);
+
+          return web3.eth
+            .sendSignedTransaction("0x" + serializedTransaction.toString("hex"))
+            .then(result => {
+              console.log("Transaction result:");
+              console.log(result);
+              return `Transaction successful: ${params.from} sent ${
+                request.params.amount
+              } to ${params.to}`;
+            })
+            .catch(err => {
+              console.log(err);
+            });
         } catch (err) {
           console.log(err);
           return err;
