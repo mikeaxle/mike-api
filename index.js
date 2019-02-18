@@ -48,9 +48,9 @@ const contract = new web3.eth.Contract(abi, contractAddress);
 
 // Create a server with a host and port
 const server = Hapi.server({
-  // port: +process.env.PORT, 
+  port: +process.env.PORT, 
   host :'0.0.0.0',
-  port: 715
+  // port: 715
 });
 
 // number of decimals
