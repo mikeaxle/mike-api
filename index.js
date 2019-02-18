@@ -157,7 +157,7 @@ server.route([
             from: request.params.from,
             amount: new BigNumber(request.params.amount * decimals),
             privateKey: new Buffer(request.params.privateKey, "hex"),
-            nonce: await web3.eth.getTransactionCount(request.params.from, "pending"),
+            nonce: await web3.eth.getTransactionCount(request.params.from),
             gasPrice: await web3.eth.getGasPrice()
           };
 
