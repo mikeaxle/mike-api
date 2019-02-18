@@ -48,9 +48,9 @@ const contract = new web3.eth.Contract(abi, contractAddress);
 
 // Create a server with a host and port
 const server = Hapi.server({
-  port: +process.env.PORT, 
+  // port: +process.env.PORT, 
   host :'0.0.0.0',
-  // port: 715
+  port: 715
 });
 
 // number of decimals
@@ -161,8 +161,10 @@ server.route([
             gasPrice: await web3.eth.getGasPrice()
           };
 
+          console.log(params.amount.toString())
+
           // check if sender has sheets first
-          let balance = await contract.methods.balanceOf(params.to).call();
+          let balance = await contract.methods.balanceOf(params.from).call();
           if (Number(balance.balance) === 0) {
             return `Transaction failed: not enough funds @ address: ${params.from}`
           }
@@ -193,9 +195,9 @@ server.route([
           let serializedTransaction = transaction.serialize();
 
           // Send the serialized signed transaction to the Ethereum network.
-          // let result = await web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
-          // console.log('Transaction result:')
-          // console.log(result)
+          let result = await web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
+          console.log('Transaction result:')
+          console.log(result)
 
           return `Transaction successful: ${params.from} sent ${request.params.amount} to ${params.to}`
 
