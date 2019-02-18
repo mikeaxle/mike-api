@@ -1,10 +1,8 @@
-
-
 // import swagger documentation
-const Inert = require('inert');
-const Vision = require('vision');
-const HapiSwagger = require('hapi-swagger');
-const Joi = require('joi');
+const Inert = require("inert");
+const Vision = require("vision");
+const HapiSwagger = require("hapi-swagger");
+const Joi = require("joi");
 
 // import hapi js
 const Hapi = require("hapi");
@@ -20,9 +18,9 @@ var Web3 = require("web3");
 // swagger options
 const swaggerOptions = {
   info: {
-    title: 'SMART TOKEN API Documentation',
-    version: "1",
-  },
+    title: "SMART TOKEN API Documentation",
+    version: "1"
+  }
 };
 
 // network url object
@@ -48,8 +46,8 @@ const contract = new web3.eth.Contract(abi, contractAddress);
 
 // Create a server with a host and port
 const server = Hapi.server({
-  port: +process.env.PORT, 
-  host :'0.0.0.0',
+  port: +process.env.PORT,
+  host: "0.0.0.0"
   // port: 715
 });
 
@@ -61,11 +59,10 @@ server.route([
   {
     method: "GET",
     path: "/",
-    handler: async = (request, h) => {
-      let date = new Date()
-      return { "started": date, "uptime" : date.getMilliseconds() }
-    }
-
+    handler: (async = (request, h) => {
+      let date = new Date();
+      return { started: date, uptime: date.getMilliseconds() };
+    })
   },
   {
     /**
@@ -75,9 +72,9 @@ server.route([
     method: "GET",
     path: "/totalSupply",
     options: {
-      description: 'Gets total supply of tokens',
-      notes: 'returns a string',
-      tags: ['api'],
+      description: "Gets total supply of tokens",
+      notes: "returns a string",
+      tags: ["api"],
       handler: async (request, h) => {
         // let _tokenId = request.params.starTokenId
         // console.log(_tokenId)
@@ -102,18 +99,17 @@ server.route([
     method: "GET",
     path: "/balanceOf/{address}",
     options: {
-      description: 'Get balance of account',
-      notes: 'returns a string',
-      tags: ['api'],
+      description: "Get balance of account",
+      notes: "returns a string",
+      tags: ["api"],
       validate: {
         params: {
           address: Joi.string()
             .required()
-            .description('wallet address to get balance of'),
+            .description("wallet address to get balance of")
         }
       },
       handler: async (request, h) => {
-
         // get address from request
         let address = request.params.address;
 
@@ -138,15 +134,23 @@ server.route([
     method: "POST",
     path: "/transfer/{from}/{to}/{amount}/{privateKey}",
     options: {
-      description: 'Transfer tokens from one address to another',
-      notes: 'validation should be done on the front-end',
-      tags: ['api'],
+      description: "Transfer tokens from one address to another",
+      notes: "validation should be done on the front-end",
+      tags: ["api"],
       validate: {
         params: {
-          to: Joi.string().required().description(`receiver address`),
-          from: Joi.string().required().description('sender address'),
-          amount: Joi.string().required().description('amount of tokens'),
-          privateKey: Joi.string().required().description('sender private key')
+          to: Joi.string()
+            .required()
+            .description(`receiver address`),
+          from: Joi.string()
+            .required()
+            .description("sender address"),
+          amount: Joi.string()
+            .required()
+            .description("amount of tokens"),
+          privateKey: Joi.string()
+            .required()
+            .description("sender private key")
         }
       },
       handler: async (request, h) => {
@@ -161,12 +165,14 @@ server.route([
             gasPrice: await web3.eth.getGasPrice()
           };
 
-          console.log(params.amount.toString())
+          console.log(params.amount.toString());
 
           // check if sender has sheets first
           let balance = await contract.methods.balanceOf(params.from).call();
           if (Number(balance.balance) === 0) {
-            return `Transaction failed: not enough funds @ address: ${params.from}`
+            return `Transaction failed: not enough funds @ address: ${
+              params.from
+            }`;
           }
 
           // create data object from transfer method
@@ -176,13 +182,13 @@ server.route([
 
           // Set up the transaction using the transaction variables
           let rawTransaction = {
-            'nonce': web3.utils.toHex(params.nonce),
-            'to': contractAddress,
-            'from': params.from,
-            'gasPrice': web3.utils.toHex(params.gasPrice),
-            'gasLimit': web3.utils.toHex(100000),
-            'value': web3.utils.toHex(0),
-            'data': _data
+            nonce: web3.utils.toHex(params.nonce),
+            to: contractAddress,
+            from: params.from,
+            gasPrice: web3.utils.toHex(params.gasPrice),
+            gasLimit: web3.utils.toHex(100000),
+            value: web3.utils.toHex(0),
+            data: _data
           };
 
           // create transaction object
@@ -195,22 +201,25 @@ server.route([
           let serializedTransaction = transaction.serialize();
 
           // Send the serialized signed transaction to the Ethereum network.
-          try {
-            let result = await web3.eth.sendSignedTransaction('0x' + serializedTransaction.toString('hex'))
-            console.log('Transaction result:')
-            console.log(result)
-            return `Transaction successful: ${params.from} sent ${request.params.amount} to ${params.to}`
-          } catch(err) {
-            console.log(err)
-            return err
-          }
+
+          return web3.eth
+            .sendSignedTransaction("0x" + serializedTransaction.toString("hex"))
+            .then(result => {
+              console.log("Transaction result:");
+              console.log(result);
+              return `Transaction successful: ${params.from} sent ${
+                request.params.amount
+              } to ${params.to}`;
+            })
+            .catch(err => {
+              console.log(err);
+            });
         } catch (err) {
           console.log(err);
           return err;
         }
       }
     }
-
   }
 ]);
 
@@ -225,7 +234,6 @@ async function start() {
       options: swaggerOptions
     }
   ]);
-
 
   try {
     await server.start();
